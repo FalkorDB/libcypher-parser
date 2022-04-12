@@ -121,8 +121,8 @@ cypher_astnode_t *clone(const cypher_astnode_t *self,
     REQUIRE_TYPE(self, CYPHER_AST_MAP, NULL);
     struct map *node = container_of(self, struct map, _astnode);
 
-	cypher_astnode_t *keys[node->nentries / 2];
-	cypher_astnode_t *values[node->nentries / 2];
+    cypher_astnode_t *keys[node->nentries / 2];
+    cypher_astnode_t *values[node->nentries / 2];
 
     for (unsigned int i = 0; i < node->nentries; i += 2)
     {
