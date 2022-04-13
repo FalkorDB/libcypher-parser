@@ -118,6 +118,17 @@ const cypher_astnode_t *cypher_ast_pattern_get_path(
 }
 
 
+void cypher_ast_pattern_set_path(
+        cypher_astnode_t *astnode, cypher_astnode_t *path, unsigned int index)
+{
+    REQUIRE_TYPE(astnode, CYPHER_AST_PATTERN, NULL);
+    REQUIRE_TYPE(path, CYPHER_AST_PATTERN_PATH, NULL);
+    struct pattern *node = container_of(astnode, struct pattern, _astnode);
+    node->paths[index] = path;
+    cypher_astnode_set_child(astnode, path, index);
+}
+
+
 ssize_t detailstr(const cypher_astnode_t *self, char *str, size_t size)
 {
     REQUIRE_TYPE(self, CYPHER_AST_PATTERN, -1);

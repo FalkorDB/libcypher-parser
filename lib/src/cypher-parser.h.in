@@ -4998,6 +4998,25 @@ const cypher_astnode_t *cypher_ast_pattern_get_path(
         const cypher_astnode_t *node, unsigned int index);
 
 
+
+/**
+ * Set the path of a `CYPHER_AST_PATTERN` node.
+ *
+ * If the node is not an instance of `CYPHER_AST_PATTERN` then the result will
+ * be undefined.
+ *
+ * If the path is not an instance of `CYPHER_AST_PATTERN_PATH` then the result
+ * will be undefined.
+ *
+ * @param [node] The AST node.
+ * @param [path] The AST path node.
+ * @param [index] The index of the path.
+ */
+void cypher_ast_pattern_set_path(
+        cypher_astnode_t *astnode, cypher_astnode_t *path,
+        unsigned int index);
+
+
 /**
  * Construct a `CYPHER_AST_NAMED_PATH` node.
  *
