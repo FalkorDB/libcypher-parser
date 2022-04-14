@@ -121,8 +121,19 @@ cypher_astnode_t *clone(const cypher_astnode_t *self,
     REQUIRE_TYPE(self, CYPHER_AST_MAP, NULL);
     struct map *node = container_of(self, struct map, _astnode);
 
-    cypher_astnode_t *keys[node->nentries / 2];
-    cypher_astnode_t *values[node->nentries / 2];
+    cypher_astnode_t **keys = calloc(node->nentries / 2,
+            sizeof(cypher_astnode_t *));
+    if (keys == NULL)
+    {
+        return NULL;
+    }
+
+    cypher_astnode_t **values = calloc(node->nentries / 2,
+            sizeof(cypher_astnode_t *));
+    if (values == NULL)
+    {
+        return NULL;
+    }
 
     for (unsigned int i = 0; i < node->nentries; i += 2)
     {
@@ -133,6 +144,8 @@ cypher_astnode_t *clone(const cypher_astnode_t *self,
     cypher_astnode_t *clone = cypher_ast_map(keys, values, node->nentries,
             children, self->nchildren, self->range);
     int errsv = errno;
+    free(keys);
+    free(values);
     errno = errsv;
     return clone;
 }
