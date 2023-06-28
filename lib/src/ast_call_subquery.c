@@ -110,7 +110,15 @@ void cypher_ast_call_subquery_push_clause(
 
     cypher_astnode_t *new_query =
         cypher_ast_query_push_clause(subquery_node->query, clause, index);
-    free(subquery_node->query);
+
+    if(subquery_node->query != NULL) {
+        free(subquery_node->query);
+        while (subquery_node->query->annotations != NULL)
+        {
+            cp_release_annotation(subquery_node->query->annotations);
+        }
+    }
+
     astnode->children[0] = new_query;
     subquery_node->query = new_query;
 }
