@@ -551,6 +551,26 @@ void cypher_ast_statement_replace_body(cypher_astnode_t *astnode,
         const cypher_astnode_t *body);
 
 /**
+ * Insert clause at position `index` of a `CYPHER_AST_STATEMENT` node.
+ *
+ * If the node is not an instance of `CYPHER_AST_STATEMENT` then the result will
+ * be undefined.
+ *
+ * If the clause is not an instance of `CYPHER_AST_QUERY_CLAUSE` then the result
+ * will be undefined.
+ *
+ * @param [node] The AST node.
+ * @param [clause] The AST clause node.
+ * @param [index] The index of the new clause.
+ */
+void cypher_ast_statement_push_clause
+(
+    cypher_astnode_t *astnode,
+    cypher_astnode_t *clause,
+    unsigned int index
+);
+
+/**
  * Get the number of options in a `CYPHER_AST_STATEMENT` node.
  *
  * If the node is not an instance of `CYPHER_AST_STATEMENT` then the result will
