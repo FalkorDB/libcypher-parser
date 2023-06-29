@@ -105,16 +105,9 @@ void cypher_ast_statement_push_clause
 
     cypher_astnode_t *body =
         cypher_ast_query_push_clause(node->body, clause, index);
+
     astnode->children[child_index(astnode, node->body)] = body;
-    
-    if(node->body != NULL) {
-        while (node->body->annotations != NULL)
-        {
-            cp_release_annotation(node->body->annotations);
-        }
-        free(node->body->children);
-        free(node->body);
-    }
+    cypher_astnode_free(node->body);
     node->body = body;
 }
 
