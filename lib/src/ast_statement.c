@@ -108,11 +108,12 @@ void cypher_ast_statement_push_clause
     astnode->children[child_index(astnode, node->body)] = body;
     
     if(node->body != NULL) {
-        free(node->body);
         while (node->body->annotations != NULL)
         {
             cp_release_annotation(node->body->annotations);
         }
+        free(node->body->children);
+        free(node->body);
     }
     node->body = body;
 }
