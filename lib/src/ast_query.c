@@ -229,15 +229,15 @@ cypher_astnode_t *cypher_ast_query_push_clause(
     }
 
     //insert new clause
-    for(uint i = nclauses - 1; i > index; i--) {
-        clauses[i] = query->clauses[i - 1];
-        children[i] = query->clauses[i - 1];
+    for(uint i = 0; i < index; i++) {
+        clauses[i] = query->clauses[i];
+        children[i] = query->clauses[i];
     }
     clauses[index] = clause;
     children[index] = clause;
-    for(int i = index - 1; i >= 0; i--) {
-        clauses[i] = query->clauses[i];
-        children[i] = query->clauses[i];
+    for(uint i = index + 1; i < nclauses; i++) {
+        clauses[i] = query->clauses[i - 1];
+        children[i] = query->clauses[i - 1];
     }
 
     cypher_astnode_t *new_query = cypher_ast_query(NULL, 0, clauses, nclauses,
