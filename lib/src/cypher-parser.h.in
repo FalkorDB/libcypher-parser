@@ -837,6 +837,11 @@ __cypherlang_pure
 const cypher_astnode_t *cypher_ast_drop_props_index_get_prop_name(
         const cypher_astnode_t *node, unsigned int index);
 
+enum cypher_ast_index_type {
+    range_index,
+    fulltext_index,
+    vector_index
+};
 
 /**
  * Construct a `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` node.
@@ -857,10 +862,23 @@ const cypher_astnode_t *cypher_ast_drop_props_index_get_prop_name(
 __cypherlang_must_check
 cypher_astnode_t *cypher_ast_create_pattern_props_index(
         const cypher_astnode_t *identifier, const cypher_astnode_t *label,
-		bool is_relation, cypher_astnode_t *const *prop_expressions,
-	   	unsigned int nprops, cypher_astnode_t **children, unsigned int nchildren,
-	   	struct cypher_input_range range);
+	enum cypher_ast_index_type index_type, const cypher_astnode_t *options,
+        bool is_relation, cypher_astnode_t *const *prop_expressions,
+	unsigned int nprops, cypher_astnode_t **children, unsigned int nchildren,
+	struct cypher_input_range range);
 
+/**
+ * Get the index_type of a `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` node.
+ *
+ * If the node is not an instance of `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` then
+ * the result will be undefined.
+ *
+ * @param [node] The AST node.
+ * @return A `CYPHER_AST_IDENTIFIER` node.
+ */
+__cypherlang_pure
+enum cypher_ast_index_type cypher_ast_create_pattern_props_index_get_index_type(
+        const cypher_astnode_t *astnode);
 /**
  * Get the reltype of a `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` node.
  *
@@ -886,6 +904,19 @@ const cypher_astnode_t *cypher_ast_create_pattern_props_index_get_identifier(
 __cypherlang_pure
 const cypher_astnode_t *cypher_ast_create_pattern_props_index_get_label(
         const cypher_astnode_t *node);
+
+/**
+ * Get the options of a `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` node.
+ *
+ * If the node is not an instance of `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` then
+ * the result will be undefined.
+ *
+ * @param [node] The AST node.
+ * @return A `CYPHER_AST_MAP` node.
+ */
+__cypherlang_pure
+const cypher_astnode_t *cypher_ast_create_pattern_props_index_get_options(
+        const cypher_astnode_t *astnode);
 
 /**
  * Get the number of properties in a `CYPHER_AST_CREATE_PATTERN_PROPS_INDEX` node.

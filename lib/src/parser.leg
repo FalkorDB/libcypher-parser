@@ -114,6 +114,8 @@ explain-option = < EXPLAIN >           { $$ = explain_option(); }
 schema-command =
     ( create-index-on
     | create-index-for
+    | create-fulltext-index-for
+    | create-vector-index-for
     | create-constraint
     | drop-index
     | drop-constraint
@@ -132,24 +134,69 @@ create-index-on =
 create-index-for =
     < CREATE-INDEX-FOR
       ( LEFT-PAREN - i:identifier l:label RIGHT-PAREN -
-        ON - LEFT-PAREN p:property-key-name
+        (ON | ON-EACH) - LEFT-PAREN p:property-key-name
                                        { sequence_add(p); }
         ( COMMA - p:property-key-name
                                        { sequence_add(p); }
-        )* RIGHT-PAREN >
-                                       { $$ = create_pattern_index(i, l, false);
+        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
+                                       { $$ = create_pattern_index(i, l, range_index, o, false);
 									   }
       | LEFT-PAREN - RIGHT-PAREN - (LEFT-ARROW-HEAD -)? DASH -
         LEFT-SQ-PAREN - i:identifier l:label RIGHT-SQ-PAREN -
         DASH - (RIGHT-ARROW-HEAD -)? LEFT-PAREN - RIGHT-PAREN -
-        ON - LEFT-PAREN p:property-key-name
+        (ON | ON-EACH) - LEFT-PAREN p:property-key-name
                                        { sequence_add(p); }
         ( COMMA - p:property-key-name
                                        { sequence_add(p); }
-        )* RIGHT-PAREN >
-                                       { $$ = create_pattern_index(i, l, true);
+        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
+                                       { $$ = create_pattern_index(i, l, range_index, o, true);
 									   }
     ) -
+
+create-fulltext-index-for =
+    < CREATE-FULLTEXT-INDEX-FOR
+      ( LEFT-PAREN - i:identifier l:label RIGHT-PAREN -
+        (ON | ON-EACH) - LEFT-PAREN p:property-key-name
+                                       { sequence_add(p); }
+        ( COMMA - p:property-key-name
+                                       { sequence_add(p); }
+        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
+                                       { $$ = create_pattern_index(i, l, fulltext_index, o, false);
+									   }
+      | LEFT-PAREN - RIGHT-PAREN - (LEFT-ARROW-HEAD -)? DASH -
+        LEFT-SQ-PAREN - i:identifier l:label RIGHT-SQ-PAREN -
+        DASH - (RIGHT-ARROW-HEAD -)? LEFT-PAREN - RIGHT-PAREN -
+        (ON | ON-EACH) - LEFT-PAREN p:property-key-name
+                                       { sequence_add(p); }
+        ( COMMA - p:property-key-name
+                                       { sequence_add(p); }
+        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
+                                       { $$ = create_pattern_index(i, l, fulltext_index, o, true);
+									   }
+    ) -
+
+create-vector-index-for =
+    < CREATE-VECTOR-INDEX-FOR
+      ( LEFT-PAREN - i:identifier l:label RIGHT-PAREN -
+        (ON | ON-EACH) - LEFT-PAREN p:property-key-name
+                                       { sequence_add(p); }
+        ( COMMA - p:property-key-name
+                                       { sequence_add(p); }
+        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
+                                       { $$ = create_pattern_index(i, l, vector_index, o, false);
+									   }
+      | LEFT-PAREN - RIGHT-PAREN - (LEFT-ARROW-HEAD -)? DASH -
+        LEFT-SQ-PAREN - i:identifier l:label RIGHT-SQ-PAREN -
+        DASH - (RIGHT-ARROW-HEAD -)? LEFT-PAREN - RIGHT-PAREN -
+        (ON | ON-EACH) - LEFT-PAREN p:property-key-name
+                                       { sequence_add(p); }
+        ( COMMA - p:property-key-name
+                                       { sequence_add(p); }
+        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
+                                       { $$ = create_pattern_index(i, l, vector_index, o, true);
+									   }
+    ) -
+    
 
 create-constraint =
     < CREATE-CONSTRAINT-ON
@@ -1034,10 +1081,18 @@ CREATE-CONSTRAINT-ON = [Cc]([Rr][Ee][Aa][Tt][Ee] WB -
 CREATE-INDEX-ON = [Cc]([Rr][Ee][Aa][Tt][Ee] WB -
     [Ii][Nn][Dd][Ee][Xx] WB - [Oo][Nn] WB -)
     ~{ERR("CREATE INDEX ON")}
+CREATE-FULLTEXT-INDEX-FOR = [Cc]([Rr][Ee][Aa][Tt][Ee] WB -
+    [Ff][Uu][Ll][Ll][Tt][Ee][Xx][Tt] WB - [Ii][Nn][Dd][Ee][Xx] WB - [Ff][Oo][Rr] WB -)
+    ~{ERR("CREATE INDEX FOR")}
+CREATE-VECTOR-INDEX-FOR = [Cc]([Rr][Ee][Aa][Tt][Ee] WB -
+    [Vv][Ee][Cc][Tt][Oo][Rr] WB - [Ii][Nn][Dd][Ee][Xx] WB - [Ff][Oo][Rr] WB -)
+    ~{ERR("CREATE INDEX FOR")}
 CREATE-INDEX-FOR = [Cc]([Rr][Ee][Aa][Tt][Ee] WB -
     [Ii][Nn][Dd][Ee][Xx] WB - [Ff][Oo][Rr] WB -)
     ~{ERR("CREATE INDEX FOR")}
 ON = [Oo][Nn] WB ~{ERR("ON")}
+ON-EACH = [Oo][Nn] WB - [Ee][Aa][Cc][Hh] ~{ERR("ON")}
+OPTIONS = [Oo][Pp][Tt][Ii][Oo][Nn][Ss] WB ~{ERR("ON")}
 DROP-CONSTRAINT-ON = [Dd]([Rr][Oo][Pp] WB -
     [Cc][Oo][Nn][Ss][Tt][Rr][Aa][Ii][Nn][Tt] WB - [Oo][Nn] WB -)
     ~{ERR("DROP CONSTRAINT ON")}
