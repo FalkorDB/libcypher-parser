@@ -202,9 +202,11 @@ static cypher_astnode_t *_explain_option(yycontext *yy);
 static cypher_astnode_t *_profile_option(yycontext *yy);
 #define create_index(l) _create_index(yy, l)
 static cypher_astnode_t *_create_index(yycontext *yy, cypher_astnode_t *label);
-#define create_pattern_index(i, t, r) _create_pattern_index(yy, i, t, r)
+#define create_pattern_index(i, t, it, o, r) _create_pattern_index(yy, i, t, it, o, r)
 static cypher_astnode_t *_create_pattern_index(yycontext *yy,
-         cypher_astnode_t *identifier, cypher_astnode_t *label, bool is_relation);
+         cypher_astnode_t *identifier, cypher_astnode_t *label,
+         enum cypher_ast_index_type index_type, cypher_astnode_t *options,
+         bool is_relation);
 #define drop_index(l) _drop_index(yy, l)
 static cypher_astnode_t *_drop_index(yycontext *yy, cypher_astnode_t *label);
 #define create_node_prop_constraint(i, l, e, u) \
@@ -1216,12 +1218,14 @@ cypher_astnode_t *_create_index(yycontext *yy, cypher_astnode_t *label)
 
 
 cypher_astnode_t *_create_pattern_index(yycontext *yy,
-      cypher_astnode_t *identifier, cypher_astnode_t *label, bool is_relation)
+      cypher_astnode_t *identifier, cypher_astnode_t *label,
+      enum cypher_ast_index_type index_type, cypher_astnode_t *options,
+      bool is_relation)
 {
     assert(yy->prev_block != NULL &&
             "An AST node can only be created immediately after a `>` in the grammar");
     cypher_astnode_t *node = cypher_ast_create_pattern_props_index(identifier,
-            label, is_relation, astnodes_elements(&(yy->prev_block->sequence)),
+            label, index_type, options, is_relation, astnodes_elements(&(yy->prev_block->sequence)),
             astnodes_size(&(yy->prev_block->sequence)),
             astnodes_elements(&(yy->prev_block->children)),
             astnodes_size(&(yy->prev_block->children)),
