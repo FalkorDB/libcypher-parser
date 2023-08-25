@@ -138,8 +138,8 @@ create-index-for =
                                        { sequence_add(p); }
         ( COMMA - p:property-key-name
                                        { sequence_add(p); }
-        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
-                                       { $$ = create_pattern_index(i, l, range_index, o, false);
+        )* RIGHT-PAREN >
+                                       { $$ = create_pattern_index(i, l, range_index, NULL, false);
 									   }
       | LEFT-PAREN - RIGHT-PAREN - (LEFT-ARROW-HEAD -)? DASH -
         LEFT-SQ-PAREN - i:identifier l:label RIGHT-SQ-PAREN -
@@ -148,8 +148,8 @@ create-index-for =
                                        { sequence_add(p); }
         ( COMMA - p:property-key-name
                                        { sequence_add(p); }
-        )* RIGHT-PAREN (- OPTIONS - o:map-literal)? >
-                                       { $$ = create_pattern_index(i, l, range_index, o, true);
+        )* RIGHT-PAREN >
+                                       { $$ = create_pattern_index(i, l, range_index, NULL, true);
 									   }
     ) -
 
